@@ -48,7 +48,8 @@ router.post("/deploy", upload.single("projectZip"), async (req, res) => {
         if (extractedFolder && fs.existsSync(extractedFolder)) {
             fs.rmSync(extractedFolder, { recursive: true, force: true });
         }
-        res.status(400).write(JSON.stringify({ progress: 0, message: "Error Occured, Try Again" }) + '\n');
+        const errorMessage = err.message ? err.message : "Error Occured, Try Again";
+        res.status(400).write(JSON.stringify({ progress: 0, message: errorMessage }) + '\n');
     }
     res.end();
 });
