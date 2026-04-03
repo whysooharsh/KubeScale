@@ -46,18 +46,23 @@ const UploadZip = ({setCheckPoint, setProgress, setDeploying}) => {
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder("utf-8");
+                let buffer = "";
 
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
 
-                    const chunk = decoder.decode(value, { stream: true });
-                    const lines = chunk.trim().split("\n");
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split("\n");
+
+                    buffer = lines.pop() || "";
 
                     for (const line of lines) {
+                        const trimmedLine = line.trim();
+                        if (!trimmedLine) continue;
+
                         try {
-                            if (!line) continue;
-                            const data = JSON.parse(line);
+                            const data = JSON.parse(trimmedLine);
 
                             if (data.progress === 0 && response.status >= 400) {
                                 alert(data.message || "An Error Occurred");
