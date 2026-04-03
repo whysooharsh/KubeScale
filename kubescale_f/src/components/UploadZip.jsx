@@ -38,43 +38,51 @@ const UploadZip = ({setCheckPoint, setProgress, setDeploying}) => {
             const formData = new FormData();
             formData.append("projectZip", upFile);
 
-            const response = await fetch("http://localhost:3000/api/file/deploy", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    Authorization: "Bearer xyz", // optional header
-                },
-            });
+            try {
+                const response = await fetch("http://localhost:3000/api/file/deploy", {
+                    method: "POST",
+                    body: formData
+                });
 
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder("utf-8");
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
 
-                const chunk = decoder.decode(value, { stream: true });
-                const lines = chunk.trim().split("\n");
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.trim().split("\n");
 
-                for (const line of lines) {
-                    try {
-                        const data = JSON.parse(line);
-                        console.log(`Progress: ${data.progress}% | Message: ${data.message}`);
-                        setCheckPoint(prev => (
-                            prev?.map(item => (
-                                
-                                (item.percent == data.progress) ? (item.percent == 100 ? {...item, label:data.message, url:data.link}: {...item, label:data.message}) : item
-                            ))
-                        ))
-                        setProgress(data.progress);
-                        
-                    } catch (err) {
-                        console.warn("Non-JSON chunk:", line);
+                    for (const line of lines) {
+                        try {
+                            if (!line) continue;
+                            const data = JSON.parse(line);
+
+                            if (data.progress === 0 && response.status >= 400) {
+                                alert(data.message || "An Error Occurred");
+                                setDeploying(false);
+                                setProgress(0);
+                                return;
+                            }
+
+                            setCheckPoint(prev => (
+                                prev?.map(item => (
+                                    (item.percent == data.progress) ? (item.percent == 100 ? {...item, label:data.message, url:data.link}: {...item, label:data.message}) : item
+                                ))
+                            ));
+                            setProgress(data.progress);
+                        } catch (err) {
+                        }
                     }
                 }
+            } catch (error) {
+                alert("Network error occurred during deployment.");
+                setDeploying(false);
+                setProgress(0);
             }
         }
-    }
+    };
 
     return (
         <div className="max-w-3xl h-fit mt-12 w-full p-10 rounded-2xl border border-neutral-400 backdrop-blur-[3px]">
@@ -111,7 +119,7 @@ const UploadZip = ({setCheckPoint, setProgress, setDeploying}) => {
             </div>
 
             <div className="flex items-center my-6">
-                <div className="flex-grow border-t border-neutral-600"></div>
+                <div className="grow border-t border-neutral-600"></div>
             </div>
 
             {/* Git Connection Option */}

@@ -1,16 +1,23 @@
-import { exec } from 'child_process';
-import util from "util";
-const execPromice = util.promisify(exec);
+import { spawn } from 'child_process';
 
-export const buildDockerImage = async ( projectRoot, imageName, res ) => {
-    console.log(`Building Docker image: ${imageName}`);
-    
-    try{
-        await execPromice(`cd ${projectRoot} && docker build -t ${imageName} .`);
-        console.log(`Build Successful : ${imageName}`);
-        res.write(JSON.stringify({progress: 60, message:"Built Docker Image"}) + '\n')
-    }catch(err){
-        console.error("❌ Build Failed:", err.stderr || err.message);
-        throw new Error("Docker Build Failed");
-    }
+export const buildDockerImage = (projectRoot, imageName, res) => {
+    return new Promise((resolve, reject) => {
+        const buildProcess = spawn('docker', ['build', '-t', imageName, '.'], {
+            cwd: projectRoot,
+            stdio: 'ignore'
+        });
+
+        buildProcess.on('close', (code) => {
+            if (code === 0) {
+                res.write(JSON.stringify({ progress: 60, message: "Built Docker Image" }) + '\n');
+                resolve();
+            } else {
+                reject(new Error("Docker Build Failed"));
+            }
+        });
+
+        buildProcess.on('error', (err) => {
+            reject(err);
+        });
+    });
 };
