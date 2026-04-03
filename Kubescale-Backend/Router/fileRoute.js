@@ -7,6 +7,7 @@ import { createDockerFile } from '../Components/creatDockerfile.js';
 import { buildDockerImage } from '../Components/buildDockerImage.js';
 import { runDockerContainer } from '../Components/runDockerContainer.js';
 import { exposeApp } from '../Components/exposeApp.js';
+import { pruneDockerImages } from '../Components/pruneDockerImages.js';
 
 const router = express.Router();
 
@@ -50,6 +51,8 @@ router.post("/deploy", upload.single("projectZip"), async (req, res) => {
         }
         const errorMessage = err.message ? err.message : "Error Occured, Try Again";
         res.status(400).write(JSON.stringify({ progress: 0, message: errorMessage }) + '\n');
+    } finally {
+        await pruneDockerImages();
     }
     res.end();
 });
