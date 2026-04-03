@@ -3,7 +3,7 @@ import { GoArrowUpRight } from "react-icons/go";
 import { VscGithub } from "react-icons/vsc";
 import { SiDocker, SiKubernetes } from "react-icons/si";
 import { IoMdCheckmark } from "react-icons/io";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Landing = () => {
     const navigate = useNavigate();
@@ -150,20 +150,19 @@ const Landing = () => {
                     </div>
                 </section>
 
-                <footer className="border-t border-neutral-300 py-6 relative z-10">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm">
+                <footer className="border-t border-neutral-300 py-6 relative z-10 w-full mt-20">
+                    <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm">
                         <div className="mb-4 md:mb-0">
-                            &copy; 2025 KubeScale, Inc. All rights reserved.
+                            &copy; 2026 KubeScale, Inc. All rights reserved.
                         </div>
                         <div className="flex space-x-6">
-                            <a href="#" className="hover:text-neutral-600 transition duration-200">Terms</a>
-                            <a href="#" className="hover:text-neutral-600 transition duration-200">Privacy</a>
-                            <a href="#" className="hover:text-neutral-600 transition duration-200">Support</a>
-                            <a href="#" className="hover:text-neutral-600 transition duration-200">GitHub</a>
+                            <Link to="/terms" className="hover:text-neutral-600 transition duration-200">Terms</Link>
+                            <Link to="/privacy" className="hover:text-neutral-600 transition duration-200">Privacy</Link>
+                            <Link to="/support" className="hover:text-neutral-600 transition duration-200">Support</Link>
+                            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-600 transition duration-200">GitHub</a>
                         </div>
                     </div>
                 </footer>
-
             </div>
         </>
     )

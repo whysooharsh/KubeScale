@@ -2,6 +2,9 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Landing from './pages/Landing'
 import Navbar from './components/Navbar'
 import Deploy from './pages/Deploy'
+import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
+import Support from './pages/Support'
 
 function App() {
   return (
@@ -12,6 +15,9 @@ function App() {
         <Routes>
           <Route path='/' element={<Landing />} />
           <Route path='/deploy' element={<Deploy />} />
+          <Route path='/privacy' element={<Privacy />} />
+          <Route path='/terms' element={<Terms />} />
+          <Route path='/support' element={<Support />} />
         </Routes>
       </BrowserRouter>
     </>
